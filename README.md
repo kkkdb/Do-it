@@ -1,1 +1,1 @@
-Some little game written in javascript
+#Some little game written in javascript
