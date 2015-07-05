@@ -1,1 +1,1 @@
-#A little game called little bee
+Some little game written in javascript
