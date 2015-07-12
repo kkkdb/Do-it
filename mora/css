@@ -1,0 +1,107 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family:'迷你简卡通';
+}
+html,body{
+    width:100%;
+    height: 100%;
+}
+body{
+    background: #FFCAFF;
+}
+ul{
+    list-style: none;
+}
+h1{
+    text-align: center;
+    font-size: 40px;
+}
+#game{
+    width: 800px;
+    height: 600px;
+    margin: auto;
+    position: relative;
+}
+ul.vs{
+    width:100%;
+    height:62%;
+}
+ul.vs li{
+    float: left;
+    width:50%;
+    height:100%;
+    text-align:center;
+}
+ul.vs li p {
+    font-size: 30px;
+}
+ul.vs li div.player{
+    width:223px;
+    height:337px;
+    margin:auto;
+    border-radius:50%;
+    border:10px solid #FE7BA3;
+    background-position:center;
+    background-repeat:no-repeat;
+}
+ul.vs li div.user{
+    background-image:url(images/readyl.png);
+}
+ul.vs li div.comp{
+    background-image:url(images/readyr.png);
+}
+.play{
+    text-align: center;
+}
+#result{
+    margin-top: 20px;
+    text-align: center;
+    font-size: 30px;
+}
+input{
+    font-size: 30px;
+    border-radius: 50%;
+    border:10px solid #FE7BA3;
+    cursor:pointer;
+    width:200px;
+    height:80px;
+    outline:none;
+    background-color:#FFCAFF;
+    font-weight: bold;
+}
+input.disabled{
+    color:#999;
+    cursor:auto;
+}
+input.disabled:hover{
+    font-size: 30px;
+    background-color:#FFCAFF;
+    color:#999;
+}
+input:hover{
+    font-size: 40px;
+    color:#FFCAFF;
+    background-color: #f00;
+}
+div#choose{
+    position:absolute;
+    top: 90px;
+    left: 355px;
+    display:none;
+}
+div#choose p{
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+ul.switch li{
+    text-align: center;
+    width: 90px;
+    height: 50px;
+    padding-bottom: 20px;
+    opacity:0.5;
+    cursor:pointer;
+}
+ul.switch li:hover{
+    opacity:1;
+}
