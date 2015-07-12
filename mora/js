@@ -1,0 +1,103 @@
+Function.prototype.extends = function(pfn,ext){
+    for(var prop in pfn.prototype){
+        this.prototype[prop] = pfn.prototype[prop];
+    }
+    for(var prop in ext){
+        this.prototype[prop] = ext[prop];
+    }
+}
+
+function Player(name){
+    this.name = name;
+    this.pointer = -1;
+}
+Player.prototype = {
+    guess : function(){
+        console.log('猜拳是个抽象的过程');
+    }
+}
+function User(name){
+    Player.call(this,name);
+}
+User.extends(Player,{
+    guess : function(point){
+        return this.point = point;
+    }
+})
+
+function Comp(name){
+    Player.call(this,name);
+}
+Comp.extends(Player,{
+    guess : function(){
+        return this.point = parseInt(Math.random()*3);
+    }
+});
+function Game(p1,p2){
+    this.p1 = p1;
+    this.p2 = p2;
+    this.init();
+}
+Game.prototype = {
+    init : function(){
+        document.getElementById('user_p').innerHTML = "玩家："+this.p1.name; 
+        document.getElementById('comp_p').innerHTML = "玩家："+this.p2.name;
+    },
+    play : function(){
+        this.start();   
+        this.autoPlay();
+    },
+    start : function(){
+        document.getElementById('result').innerHTML = "";
+        document.getElementById('choose').style.display = "block";
+        var oBtn = document.getElementById('btn');
+        oBtn.disabled = true;
+        oBtn.className = "disabled";
+        oBtn.value = "正在游戏中";
+    },
+    autoPlay : function(){
+        var player = document.getElementsByClassName('player');
+        var i = 0;
+        this.time = setInterval(function(){
+            player[0].style.backgroundImage = "url(images/"+(i++)%3+".png)";
+            player[1].style.backgroundImage = "url(images/"+(i++)%3+".png)";
+        },200);
+    },
+    verdict : function(point){
+        var player = document.getElementsByClassName('player');
+        clearInterval(this.time);
+        player[0].style.backgroundImage = "url(images/"+this.p1.guess(point)+".png)";
+        player[1].style.backgroundImage = "url(images/"+this.p2.guess()+".png)";
+        var res = this.p1.point - this.p2.point;
+        // alert(this.p1.point);
+        // alert(this.p2.point);
+        // alert(res);
+        var result = document.getElementById('result');
+        switch(res){
+            case  0:
+                result.innerHTML = "平局！";
+                break;
+            case -1:
+            case  2:
+                result.innerHTML = "奥特曼赢！";
+                break;
+            case  1:
+            case -2:
+                result.innerHTML = "怪兽赢！"
+                break;
+            default:
+                result.innerText = res;
+        }
+        this.end();
+    },
+    end : function(){
+        document.getElementById('choose').style.display = "none";
+        var oBtn = document.getElementById('btn');
+        oBtn.disabled = false;
+        oBtn.className = "";
+        oBtn.value = "再来一局";
+    }
+}
+var user = new User('奥特曼');
+var comp = new Comp('怪兽');
+var game = new Game(user,comp);
