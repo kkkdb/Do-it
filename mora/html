@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>猜拳</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <h1>猜拳大赛</h1>
+    <div id="game">
+        <ul class="vs">
+            <li>
+                <p id="user_p">玩家一</p>
+                <div class="player user" id="user"></div>
+            </li>
+            <li>
+                <p id="comp_p">玩家二</p>
+                <div class="player comp" id="comp"></div>
+            </li>
+        </ul>
+        <div class="play">
+            <input type="button" value="开始" onclick="game.play();" id="btn"/>
+        </div>
+        <div id="choose">
+            <p>请出拳</p>
+            <ul class="switch">
+                <li onclick="game.verdict(0)">
+                    <img src="images/0.png" alt="" width="50" height="50" />
+                </li>
+                <li onclick="game.verdict(1)">
+                    <img src="images/1.png" alt="" width="50" height="50" />
+                </li>
+                <li onclick="game.verdict(2)">
+                    <img src="images/2.png" alt="" width="50" height="50" />
+                </li>
+            </ul>
+        </div>
+        <div id="result"></div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
