@@ -1,0 +1,319 @@
+Function.prototype.extends = function(pfn,ext){
+    for(var prop in pfn.prototype){
+        this.prototype[prop] = pfn.prototype[prop];
+    }
+    for(var prop in ext){
+        this.prototype[prop] = ext[prop];
+    }
+}
+
+function Puke(count){
+    this.count = count || 1;
+    this.cards = [];
+    this.init();
+}
+Puke.prototype = {
+    //初始化
+    init : function(){
+        for(var k =0;k<this.count;k++){
+            for (var i = 1; i <= 4;i++) {
+                for (var j = 1; j <= 13; j++) {
+                    this.cards.push({point:(j>10?10:j),color:i,src:'images/'+i+'/'+j+'.jpg'})
+                };
+            };
+        }
+        this.shuffle();
+        // console.log(this.cards);
+        // console.log(this.cards.length);
+    },
+    shuffle : function(){
+        this.cards.sort(function(c1,c2){
+            return (parseInt(Math.random()*3)-1);
+        });
+    },
+    sendCard : function(){
+        //发牌
+        if (this.cards.length == 0) {
+            this.init();
+        };
+        return this.cards.shift();
+    }
+}
+/*
+text 0.1
+window.onload = function(){
+    var puke = new Puke(1);
+    for (var i = 0; i < puke.cards.length; i++) {
+        var oImg = document.createElement('img');
+        oImg.src = puke.cards[i].src;
+        document.body.appendChild(oImg);
+    };
+    document.body.appendChild(document.createElement('hr'));
+    var card = puke.sendCard();
+    var oImg = document.createElement('img');
+        oImg.src = card.src;
+        document.body.appendChild(oImg);
+    document.body.appendChild(document.createElement('hr'));
+    for (var i = 0; i < puke.cards.length; i++) {
+        var oImg = document.createElement('img');
+        oImg.src = puke.cards[i].src;
+        document.body.appendChild(oImg);
+    };
+}*/
+function Player(name){
+    this.name = name;
+    this.point = 0;
+    this.cards = [];
+}
+
+Player.prototype = {
+    //收到一张牌
+    putCard : function(card){
+        this.cards.push(card);
+    },
+    //获取当前点数返回点数
+    getPoint : function(flag){
+        var sum = 0;
+        for (var i = (flag?1:0); i < this.cards.length; i++) {
+            sum += this.cards[i].point;
+        };
+        return sum;
+    },
+    //是否要牌
+    isNeedCard : function(){
+
+    }
+}
+
+function User(name){
+    Player.call(this,name);
+}
+User.extends(Player,{
+    isNeedCard : function(need){
+        return need;
+    }
+});
+
+function Comp(name){
+    Player.call(this,name);
+}
+Comp.extends(Player,{
+    isNeedCard : function(user,need){
+        if (need<user.getPoint(true)) {
+            // alert("牌面就比我大");
+            // alert(need);
+            // alert(user.getPoint(true));
+            return true;
+        };
+        // alert(need);
+        var res = 21 - need;
+        // alert(res);
+        var rand = Math.random();
+        if (res<0) {
+            // alert("小于零");
+            need = false;
+            // this.over();
+        }else if (res<=3) {
+            // alert("小于2");
+            need = false;
+            // rand < .1?need = true:need = false;
+        }else if (res>4&&res<=5) {
+            // alert("3到5");
+            rand < .25?need = true:need = false;
+        }else if (res>6&&res<=9) {
+            // alert("6到9");
+            rand < .5?need = true:need = false;
+        }else{
+            // alert("10以上");
+            need = true;
+        }
+        return need;
+    }
+});
+function Game21point(user,compCount,pukeCount){
+    this.user = user;
+    this.compCount = compCount;
+    this.players = [];
+    this.puke = new Puke(pukeCount);
+    this.init();
+    this.firstCard = [];
+}
+var score = [];
+var result = 0;
+Game21point.prototype = {
+    init : function(){
+        this.players.push(this.user);
+        for (var i = 0; i < this.compCount; i++) {
+            this.players.push(new Comp('电脑'+(i+1)));
+        };
+    },
+    play : function(){
+        for (var i = 0; i < this.players.length; i++) {
+            var card1 = this.puke.sendCard();
+            var card2 = this.puke.sendCard();
+            this.players[i].putCard(card1);
+            this.players[i].putCard(card2);
+            // alert(this.players[0].name+"的点数为"+this.players[0].getPoint(false));
+            // alert(this.players[1].name+"的点数为"+this.players[1].getPoint(false));
+            if (i==0) {
+                var oImg1 = document.createElement('img');
+                oImg1.src = card1.src;
+                document.getElementById('user').appendChild(oImg1);
+                var oImg2 = document.createElement('img');
+                oImg2.src = card2.src;
+                document.getElementById('user').appendChild(oImg2);
+            }else{
+                var oImg1 = document.createElement('img');
+                oImg1.src = card1.src;
+                document.getElementsByTagName('div')[i].appendChild(oImg1);
+                document.getElementsByTagName('div')[i].childNodes[0].style.opacity = "0";
+                var oImg2 = document.createElement('img');
+                oImg2.src = card2.src;
+                document.getElementsByTagName('div')[i].appendChild(oImg2);
+            }
+            // for (var i = 1; i < this.players.length; i++) {
+            //     this.firstCard[i] = card1.src;
+            // };
+        };
+    },
+    round : function(isNeed){
+            for (var i = 1; i < this.players.length; i++) {
+                do{
+                    if(this.players[i].isNeedCard(this.user,this.players[i].getPoint(false))){
+                        // alert(this.players[i].getPoint(false));
+                        var card = this.puke.sendCard();
+                        this.players[i].putCard(card);
+                        var oImg1 = document.createElement('img');
+                        oImg1.src = card.src;
+                        document.getElementsByTagName('div')[i].appendChild(oImg1); 
+                    }
+                }while(this.players[i].getPoint(false)<18);
+                document.getElementsByTagName('div')[i].style.background = "green"; 
+            };
+        
+        
+        isNeed = this.players[0].isNeedCard(isNeed);
+        if (isNeed) {
+            var card = this.puke.sendCard()
+            this.players[0].putCard(card);
+            var oImg1 = document.createElement('img');
+            oImg1.src = card.src;
+            document.getElementById('user').appendChild(oImg1);
+            document.getElementById('pointer').value = zs.getPoint(false);
+        }else{
+            this.visible(false);
+        }
+        this.visible(true);
+    },
+    visible : function(flag){   //评判
+        if (flag) {
+            var userPoint = this.user.getPoint(false);
+            if (userPoint>21){
+                tip_alert(1);
+                // alert('你已爆炸！！输掉了');
+                this.over();
+                // window.history.go(0);
+            }
+            var k = 0;
+            for (var i = 1; i < this.players.length; i++) {
+                var compPoint = this.players[i].getPoint(false);
+                if (compPoint >21){
+                    k++;
+                    // console.log('电脑'+i+'挂了');
+                    document.getElementsByTagName('div')[i].style.background = "red";
+                }
+                if (k==this.players.length-1) {
+                    tip_alert(2);// alert('电脑都炸了！庄赢了！');
+                };
+            };
+        }else{
+            this.over();
+            if (this.user.getPoint(false)==21) {
+                tip_alert(3); //alert('庄家赢啦');
+            }else{
+                var l = 0;
+                for (var i = 0; i < this.players.length; i++) {
+                    if (this.players[i].getPoint(false)<=21) {
+                        if (this.user.getPoint(false)<this.players[i].getPoint(false)) {
+                            l++;
+                            // alert('电脑'+i+"玩家"+this.players[i].getPoint(false)+"点，输了");
+                        }
+                    }
+                }
+                if (l>0) {
+                    tip_alert(4);
+                }else{
+                    tip_alert(5);
+                    // score[i] = this.players[i].getPoint(false);
+                    // console.log(score);
+                    // score.sort(function(a,b){
+                    //     return b-a;
+                    // })
+                    // if (score[0]==this.players[0].getPoint(false)) {
+                    //     tip_alert(5);
+                    //     // alert("庄家点数最大！庄家赢！")
+                    // };
+                }
+            }
+        }
+    },
+    over : function(){
+        for (var i = 1; i < this.players.length; i++) {
+            document.getElementsByTagName('div')[i].childNodes[0].style.opacity = "1";
+        };
+        document.getElementById('again').disabled = false;
+        document.getElementById('txt').value = "";
+    }
+}
+function tip_alert(num){
+    var oTxt = document.getElementById('txt');
+    switch(num){
+    case 1:
+        oTxt.value ='你已爆炸！！输掉了';
+        break;
+    case 2:
+        oTxt.value = '电脑都炸了！庄赢了！';
+        break;
+    case 3:
+        oTxt.value = 'Yeah~21点！拿钱来！';
+        break;
+    case 4:
+        oTxt.value = '有电脑玩家点数比庄家高！输了~';
+        break;
+    case 5:
+        oTxt.value = "庄家点数最大！庄家赢！";
+        break;
+    default:
+        alert(1);
+        break;
+    }
+}
+
+var zs = new User('张三');
+var game = new Game21point(zs,3,1);
+window.onload =function(){
+    for (var i = 0; i < game.players.length-1; i++) {
+    var oDiv = document.createElement('div');
+    document.body.appendChild(oDiv);
+    };
+    game.play();
+    document.getElementById('pointer').value = zs.getPoint(false);
+}
+
+
+/*
+text 0.2
+window.onload = function(){
+    var puke = new Puke(1);
+    var zs = new User('张三');
+    var card = puke.sendCard();
+    zs.putCard(card);
+    var card = puke.sendCard();
+    console.log(card);
+    zs.putCard(card);
+    var card = puke.sendCard();
+    console.log(card);
+    zs.putCard(card);
+    console.log(zs.getPoint(true));
+}
+*/
