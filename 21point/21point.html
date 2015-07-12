@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>21点</title>
+    <link rel="stylesheet" href="css/game.css" />
+    <script src="js/game.js"></script>
+</head>
+<body>
+    <div id="user"></div>
+    <input type="button" value="要牌!" onclick="game.round(true)" />
+    <input type="button" value="开牌！" onclick="game.round(false)"/>
+    <input type="button" value=0 id="pointer"/>
+    <input type="button" value="再来一局" disabled="true" onclick="history.go(0);" id="again"/>
+    <input type="text" readonly="readonly" value="" id="txt"/>
+    
+</body>
+</html>
